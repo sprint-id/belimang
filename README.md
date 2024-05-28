@@ -48,7 +48,7 @@ Database migration must use [golang-migrate](https://github.com/golang-migrate/m
         ```
 
 
-## Run & Build EniQilo Store
+## Run & Build Beli Mang
 
 Run for debugging
 
