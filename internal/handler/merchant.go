@@ -40,6 +40,7 @@ func newMerchantHandler(merchantSvc *service.MerchantService) *merchantHandler {
 
 func (h *merchantHandler) CreateMerchant(w http.ResponseWriter, r *http.Request) {
 	var req dto.ReqCreateMerchant
+	var res dto.ResCreateMerchant
 	var jsonData map[string]interface{}
 
 	// Decode request body into the jsonData map
@@ -82,15 +83,24 @@ func (h *merchantHandler) CreateMerchant(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = h.merchantSvc.CreateMerchant(r.Context(), req, token.Subject())
+	res, err = h.merchantSvc.CreateMerchant(r.Context(), req, token.Subject())
 	if err != nil {
 		code, msg := ierr.TranslateError(err)
 		http.Error(w, msg, code)
 		return
 	}
 
-	// should return 201 if success
-	w.WriteHeader(http.StatusCreated)
+	successRes := response.SuccessReponse{}
+	successRes.Message = "success"
+	successRes.Data = res
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated) // Set HTTP status code to 201
+	err = json.NewEncoder(w).Encode(successRes)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *merchantHandler) GetMerchant(w http.ResponseWriter, r *http.Request) {

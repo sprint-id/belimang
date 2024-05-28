@@ -52,3 +52,15 @@ func (u *userRepo) GetByUsername(ctx context.Context, cred string) (entity.User,
 
 	return user, nil
 }
+
+func (u *userRepo) IsAdmin(ctx context.Context, sub string) (bool, error) {
+	var isAdmin bool
+	q := `SELECT is_admin FROM users WHERE id = $1`
+
+	err := u.conn.QueryRow(ctx, q, sub).Scan(&isAdmin)
+	if err != nil {
+		return false, err
+	}
+
+	return isAdmin, nil
+}

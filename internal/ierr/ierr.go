@@ -22,14 +22,12 @@ func ExtendErr(err customError, msg string) error {
 }
 
 var (
-	ErrInternal       = customError{Message: "Sorry, an internal server error occurred. Please try again later."}
-	ErrDuplicate      = customError{Message: "The data you provided conflicts with existing data. Please review the information you entered"}
-	ErrNotFound       = customError{Message: "Sorry, the resource you requested could not be found."}
-	ErrBadRequest     = customError{Message: "Sorry, the request is invalid. Please check your input and try again."}
-	ErrForbidden      = customError{Message: "You do not have permission to access or edit this resource."}
-	ErrStockNotEnough = customError{Message: "Sorry, the stock is not enough."}
-	ErrNotEnoughPaid  = customError{Message: "Sorry, the paid is not enough."}
-	ErrChangeNotMatch = customError{Message: "Sorry, the change is not match."}
+	ErrInternal   = customError{Message: "Sorry, an internal server error occurred. Please try again later."}
+	ErrDuplicate  = customError{Message: "The data you provided conflicts with existing data. Please review the information you entered"}
+	ErrNotFound   = customError{Message: "Sorry, the resource you requested could not be found."}
+	ErrBadRequest = customError{Message: "Sorry, the request is invalid. Please check your input and try again."}
+	ErrForbidden  = customError{Message: "You do not have permission to access or edit this resource."}
+	ErrInvalidURL = customError{Message: "Invalid URL"}
 )
 
 func TranslateError(err error) (code int, msg string) {
@@ -44,11 +42,7 @@ func TranslateError(err error) (code int, msg string) {
 		return http.StatusForbidden, err.Error()
 	case ErrBadRequest:
 		return http.StatusBadRequest, err.Error()
-	case ErrStockNotEnough:
-		return http.StatusBadRequest, err.Error()
-	case ErrNotEnoughPaid:
-		return http.StatusBadRequest, err.Error()
-	case ErrChangeNotMatch:
+	case ErrInvalidURL:
 		return http.StatusBadRequest, err.Error()
 	}
 

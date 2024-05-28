@@ -22,16 +22,16 @@ func newMerchantRepo(conn *pgxpool.Pool) *merchantRepo {
 	return &merchantRepo{conn}
 }
 
-func (mr *merchantRepo) CreateMerchant(ctx context.Context, sub string, merchant entity.Merchant) error {
+func (mr *merchantRepo) CreateMerchant(ctx context.Context, sub string, merchant entity.Merchant) (dto.ResCreateMerchant, error) {
 	// Start a transaction with serializable isolation level
 	tx, err := mr.conn.Begin(ctx)
 	if err != nil {
-		return err
+		return dto.ResCreateMerchant{}, err
 	}
 	defer tx.Rollback(ctx)
 
-	q := `INSERT INTO merchants (user_id, name, merchant_category, image_url, location_lat, location_long, created_at)
-	VALUES ( $1, $2, $3, $4, $5, $6, EXTRACT(EPOCH FROM now())::bigint) RETURNING id`
+	q := `INSERT INTO merchants (id, user_id, name, merchant_category, image_url, location_lat, location_long, created_at)
+	VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, EXTRACT(EPOCH FROM now())::bigint) RETURNING id`
 	fmt.Printf("sub: %s\n", sub)
 
 	var id string
@@ -44,19 +44,19 @@ func (mr *merchantRepo) CreateMerchant(ctx context.Context, sub string, merchant
 	if err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			if pgErr.Code == "23505" {
-				return ierr.ErrDuplicate
+				return dto.ResCreateMerchant{}, ierr.ErrDuplicate
 			}
 		}
-		return err
+		return dto.ResCreateMerchant{}, err
 	}
 
 	// Commit the transaction
 	err = tx.Commit(ctx)
 	if err != nil {
-		return err
+		return dto.ResCreateMerchant{}, err
 	}
 
-	return nil
+	return dto.ResCreateMerchant{MerchantId: id}, nil
 }
 
 func (mr *merchantRepo) GetMerchant(ctx context.Context, param dto.ParamGetMerchant, sub string) ([]dto.ResGetMerchant, error) {

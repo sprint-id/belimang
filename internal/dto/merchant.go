@@ -26,6 +26,10 @@ type (
 		CreatedAt        string `json:"createdAt"`
 	}
 
+	ResCreateMerchant struct {
+		MerchantId string `json:"merchantId"`
+	}
+
 	ResGetMerchant struct {
 		MerchantId       string   `json:"merchantId"`
 		Name             string   `json:"name"`
