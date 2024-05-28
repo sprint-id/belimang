@@ -35,19 +35,19 @@ func newItemRepo(conn *pgxpool.Pool) *itemRepo {
 // 	  "imageUrl": "" // not null | should be image url
 //   }
 
-func (cr *itemRepo) AddItem(ctx context.Context, sub string, item entity.Item) error {
+func (cr *itemRepo) AddItem(ctx context.Context, sub, merchantId string, item entity.Item) (dto.ResAddItem, error) {
 	// add item
-	q := `INSERT INTO items (user_id, name, product_category, price, image_url, created_at)
-	VALUES ( $1, $2, $3, $4, $5, EXTRACT(EPOCH FROM now())::bigint) RETURNING id`
+	q := `INSERT INTO items (id, user_id, merchant_id, name, product_category, price, image_url, created_at)
+	VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, EXTRACT(EPOCH FROM now())::bigint) RETURNING id`
 
 	var id string
-	err := cr.conn.QueryRow(ctx, q, sub, item.Name, item.ProductCategory, item.Price, item.ImageUrl).Scan(&id)
+	err := cr.conn.QueryRow(ctx, q, sub, merchantId, item.Name, item.ProductCategory, item.Price, item.ImageUrl).Scan(&id)
 	if err != nil {
 		fmt.Printf("error query: %v\n", err)
-		return err
+		return dto.ResAddItem{}, err
 	}
 
-	return nil
+	return dto.ResAddItem{ItemId: id}, nil
 }
 
 func (cr *itemRepo) GetItem(ctx context.Context, param dto.ParamGetItem, sub string) ([]dto.ResGetItem, error) {

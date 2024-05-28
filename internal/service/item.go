@@ -27,23 +27,24 @@ func newItemService(repo *repo.Repo, validator *validator.Validate, cfg *cfg.Cfg
 // 	"medications" : "" // not null, minLength 1, maxLength 2000
 // }
 
-func (u *ItemService) AddItem(ctx context.Context, body dto.ReqAddItem, sub string) error {
+func (u *ItemService) AddItem(ctx context.Context, body dto.ReqAddItem, sub, merchantId string) (dto.ResAddItem, error) {
+	var res dto.ResAddItem
 	err := u.validator.Struct(body)
 	if err != nil {
 		fmt.Printf("error AddItem: %v\n", err)
-		return ierr.ErrBadRequest
+		return dto.ResAddItem{}, ierr.ErrBadRequest
 	}
 
 	item := body.ToItemEntity(sub)
-	err = u.repo.Item.AddItem(ctx, sub, item)
+	res, err = u.repo.Item.AddItem(ctx, sub, merchantId, item)
 	if err != nil {
 		if err == ierr.ErrDuplicate {
-			return ierr.ErrBadRequest
+			return dto.ResAddItem{}, ierr.ErrDuplicate
 		}
-		return err
+		return dto.ResAddItem{}, ierr.ErrInternal
 	}
 
-	return nil
+	return res, nil
 }
 
 func (u *ItemService) GetItem(ctx context.Context, param dto.ParamGetItem, sub string) ([]dto.ResGetItem, error) {

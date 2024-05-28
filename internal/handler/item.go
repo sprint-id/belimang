@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/sprint-id/eniqilo-server/internal/dto"
@@ -22,7 +23,10 @@ func newItemHandler(itemSvc *service.ItemService) *itemHandler {
 }
 
 func (h *itemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
+	merchantId := strings.Split(r.URL.Path, "/")[3]
+	fmt.Printf("id: %s\n", merchantId)
 	var req dto.ReqAddItem
+	var res dto.ResAddItem
 	var jsonData map[string]interface{}
 
 	// Decode request body into the jsonData map
@@ -40,7 +44,7 @@ func (h *itemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for unexpected fields
-	expectedFields := []string{"identityNumber", "symptoms", "medications"}
+	expectedFields := []string{"name", "price", "productCategory", "imageUrl"}
 	for key := range jsonData {
 		if !contains(expectedFields, key) {
 			http.Error(w, "unexpected field in request body: "+key, http.StatusBadRequest)
@@ -68,14 +72,24 @@ func (h *itemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.itemSvc.AddItem(r.Context(), req, token.Subject())
+	res, err = h.itemSvc.AddItem(r.Context(), req, token.Subject(), merchantId)
 	if err != nil {
 		code, msg := ierr.TranslateError(err)
 		http.Error(w, msg, code)
 		return
 	}
 
+	successRes := response.SuccessReponse{}
+	successRes.Message = "success"
+	successRes.Data = res
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // Set HTTP status code to 201
+	err = json.NewEncoder(w).Encode(successRes)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *itemHandler) GetItem(w http.ResponseWriter, r *http.Request) {

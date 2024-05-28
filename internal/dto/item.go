@@ -34,6 +34,10 @@ type (
 		CreatedAt       string `json:"createdAt"`
 	}
 
+	ResAddItem struct {
+		ItemId string `json:"itemId"`
+	}
+
 	ResGetItem struct {
 		ItemId          string `json:"itemId"`
 		Name            string `json:"name"`

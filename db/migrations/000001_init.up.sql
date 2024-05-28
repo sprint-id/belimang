@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS merchants (
 CREATE TABLE IF NOT EXISTS items (
     id UUID PRIMARY KEY,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    merchant_id UUID REFERENCES merchants(id) ON DELETE CASCADE,
     name VARCHAR NOT NULL,
     product_category VARCHAR NOT NULL,
     price INT NOT NULL,
