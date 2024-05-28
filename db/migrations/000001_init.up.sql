@@ -31,6 +31,14 @@ CREATE TABLE IF NOT EXISTS items (
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
+CREATE TABLE IF NOT EXISTS estimates (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    total_price INT NOT NULL,
+    delivery_time INT NOT NULL,
+    created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
+);
+
 CREATE INDEX idx_users_username ON users (username);
 CREATE INDEX idx_users_id ON users (id);
 CREATE INDEX idx_merchants_id ON merchants (id);
@@ -39,5 +47,7 @@ CREATE INDEX idx_merchants_merchant_category ON merchants (merchant_category);
 CREATE INDEX idx_items_id ON items (id);
 CREATE INDEX idx_items_user_id ON items (user_id);
 CREATE INDEX idx_items_product_category ON items (product_category);
+CREATE INDEX idx_estimates_id ON estimates (id);
+CREATE INDEX idx_estimates_user_id ON estimates (user_id);
 
 COMMIT TRANSACTION;

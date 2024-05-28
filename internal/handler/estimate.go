@@ -9,6 +9,7 @@ import (
 	"github.com/sprint-id/eniqilo-server/internal/dto"
 	"github.com/sprint-id/eniqilo-server/internal/ierr"
 	"github.com/sprint-id/eniqilo-server/internal/service"
+	response "github.com/sprint-id/eniqilo-server/pkg/resp"
 )
 
 type estimateHandler struct {
@@ -21,6 +22,7 @@ func newEstimateHandler(estimateSvc *service.EstimateService) *estimateHandler {
 
 func (h *estimateHandler) CreateEstimate(w http.ResponseWriter, r *http.Request) {
 	var req dto.ReqCreateEstimate
+	var res dto.ResCreateEstimate
 	var jsonData map[string]interface{}
 
 	// Decode request body into the jsonData map
@@ -66,12 +68,22 @@ func (h *estimateHandler) CreateEstimate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = h.estimateSvc.CreateEstimate(r.Context(), req, token.Subject())
+	res, err = h.estimateSvc.CreateEstimate(r.Context(), req, token.Subject())
 	if err != nil {
 		code, msg := ierr.TranslateError(err)
 		http.Error(w, msg, code)
 		return
 	}
 
+	successRes := response.SuccessReponse{}
+	successRes.Message = "success"
+	successRes.Data = res
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // Set HTTP status code to 201
+	err = json.NewEncoder(w).Encode(successRes)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }

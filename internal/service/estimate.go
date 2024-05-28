@@ -27,54 +27,67 @@ func newEstimateService(repo *repo.Repo, validator *validator.Validate, cfg *cfg
 	return &EstimateService{repo, validator, cfg}
 }
 
-func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreateEstimate, sub string) error {
+func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreateEstimate, sub string) (dto.ResCreateEstimate, error) {
+	var res dto.ResCreateEstimate
 	err := u.validator.Struct(body)
 	if err != nil {
 		fmt.Printf("error CreateEstimate: %v\n", err)
-		return ierr.ErrBadRequest
+		return dto.ResCreateEstimate{}, ierr.ErrBadRequest
+	}
+
+	// check if user or admin, this is for user only
+	isAdmin, err := u.repo.User.IsAdmin(ctx, sub)
+	if err != nil {
+		return dto.ResCreateEstimate{}, ierr.ErrInternal
+	}
+
+	if isAdmin {
+		return dto.ResCreateEstimate{}, ierr.ErrForbidden
 	}
 
 	// calculate total price from items price in orders
-	// var totalPrice int
-	// for _, order := range body.Orders {
-	// 	// get item from order items
-	// 	for _, item := range order.Items {
-	// 		// get item from item id
-	// 		itemEntity, err := u.repo.Item.GetItemByID(ctx, item.ItemID)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-
-	// 		totalPrice += itemEntity[0].Price * item.Quantity
-	// 	}
-	// }
-	// Collect all item IDs
-	itemIDs := make([]string, 0, len(body.Orders))
-	for _, order := range body.Orders {
-		for _, item := range order.Items {
-			itemIDs = append(itemIDs, item.ItemID)
-		}
-	}
-
-	// Fetch all items in a single query
-	items, err := u.repo.Item.GetItemsByIDs(ctx, itemIDs)
-	if err != nil {
-		return err
-	}
-
-	// Create a map for item prices
-	itemPrices := make(map[string]int)
-	for _, item := range items {
-		itemPrices[item.ID] = item.Price
-	}
-
-	// Calculate total price
 	var totalPrice int
 	for _, order := range body.Orders {
+		// get item from order items
 		for _, item := range order.Items {
-			totalPrice += itemPrices[item.ItemID] * item.Quantity
+			// get item from item id
+			itemEntity, err := u.repo.Item.GetItemByID(ctx, item.ItemID)
+			if err != nil {
+				return dto.ResCreateEstimate{}, ierr.ErrInternal
+			}
+
+			totalPrice += itemEntity.Price * item.Quantity
 		}
 	}
+
+	fmt.Printf("totalPrice: %v\n", totalPrice)
+	// // Collect all item IDs
+	// itemIDs := make([]string, 0, len(body.Orders))
+	// for _, order := range body.Orders {
+	// 	for _, item := range order.Items {
+	// 		itemIDs = append(itemIDs, item.ItemID)
+	// 	}
+	// }
+
+	// // Fetch all items in a single query
+	// items, err := u.repo.Item.GetItemsByIDs(ctx, itemIDs)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// // Create a map for item prices
+	// itemPrices := make(map[string]int)
+	// for _, item := range items {
+	// 	itemPrices[item.ID] = item.Price
+	// }
+
+	// // Calculate total price
+	// var totalPrice int
+	// for _, order := range body.Orders {
+	// 	for _, item := range order.Items {
+	// 		totalPrice += itemPrices[item.ItemID] * item.Quantity
+	// 	}
+	// }
 
 	// calculate distance and estimated time
 	var estimatedTime float64
@@ -84,11 +97,11 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 	// merchant start point lat and lon
 	var merchantLat, merchantLong float64
 	for _, order := range body.Orders {
-		if order.IsStartingPoint {
+		if *order.IsStartingPoint {
 			// get merchant from merchant id
 			merchant, err := u.repo.Merchant.GetMerchantByID(ctx, order.MerchantID)
 			if err != nil {
-				return err
+				return dto.ResCreateEstimate{}, ierr.ErrInternal
 			}
 
 			merchantLat = merchant.Location.Lat
@@ -98,17 +111,18 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 
 	// calculate estimated time in second with velocity 40 km/h
 	estimatedTime = 3600 * (hsDist(degPos(userLat, userLong), degPos(merchantLat, merchantLong)) / 40)
+	fmt.Printf("original estimatedTime: %v\n", estimatedTime)
 
 	estimate := body.ToEstimateEntity(sub, totalPrice, int(estimatedTime))
-	err = u.repo.Estimate.CreateEstimate(ctx, sub, estimate)
+	res, err = u.repo.Estimate.CreateEstimate(ctx, sub, estimate)
 	if err != nil {
 		if err == ierr.ErrDuplicate {
-			return ierr.ErrBadRequest
+			return dto.ResCreateEstimate{}, ierr.ErrDuplicate
 		}
-		return err
+		return dto.ResCreateEstimate{}, ierr.ErrInternal
 	}
 
-	return nil
+	return res, nil
 }
 
 // Reference: https://rosettacode.org/wiki/Haversine_formula#Go

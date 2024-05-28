@@ -35,6 +35,16 @@ func (u *ItemService) AddItem(ctx context.Context, body dto.ReqAddItem, sub, mer
 		return dto.ResAddItem{}, ierr.ErrBadRequest
 	}
 
+	// check if user or admin, this is for admin only
+	isAdmin, err := u.repo.User.IsAdmin(ctx, sub)
+	if err != nil {
+		return dto.ResAddItem{}, ierr.ErrInternal
+	}
+
+	if !isAdmin {
+		return dto.ResAddItem{}, ierr.ErrForbidden
+	}
+
 	item := body.ToItemEntity(sub)
 	res, err = u.repo.Item.AddItem(ctx, sub, merchantId, item)
 	if err != nil {
@@ -53,6 +63,16 @@ func (u *ItemService) GetItem(ctx context.Context, param dto.ParamGetItem, sub s
 	if err != nil {
 		fmt.Printf("error GetRecord: %v\n", err)
 		return nil, ierr.ErrBadRequest
+	}
+
+	// check if user or admin, this is for admin only
+	isAdmin, err := u.repo.User.IsAdmin(ctx, sub)
+	if err != nil {
+		return nil, ierr.ErrInternal
+	}
+
+	if !isAdmin {
+		return nil, ierr.ErrForbidden
 	}
 
 	res, err := u.repo.Item.GetItem(ctx, param, sub)

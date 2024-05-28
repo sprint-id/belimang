@@ -36,7 +36,7 @@ type (
 
 	ReqOrder struct {
 		MerchantID      string    `json:"merchantId" validate:"required"`
-		IsStartingPoint bool      `json:"isStartingPoint" validate:"required"`
+		IsStartingPoint *bool     `json:"isStartingPoint" validate:"required"`
 		Items           []ReqItem `json:"items" validate:"required,dive,required"`
 	}
 

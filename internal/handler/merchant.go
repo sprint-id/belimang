@@ -120,7 +120,7 @@ func (h *merchantHandler) GetMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	customers, err := h.merchantSvc.GetMerchant(r.Context(), param, token.Subject())
+	merchants, err := h.merchantSvc.GetMerchant(r.Context(), param, token.Subject())
 	if err != nil {
 		code, msg := ierr.TranslateError(err)
 		http.Error(w, msg, code)
@@ -132,7 +132,7 @@ func (h *merchantHandler) GetMerchant(w http.ResponseWriter, r *http.Request) {
 
 	successRes := response.SuccessReponse{}
 	successRes.Message = "success"
-	successRes.Data = customers
+	successRes.Data = merchants
 
 	json.NewEncoder(w).Encode(successRes)
 	w.WriteHeader(http.StatusOK)

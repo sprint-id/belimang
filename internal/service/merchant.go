@@ -60,6 +60,22 @@ func (u *MerchantService) CreateMerchant(ctx context.Context, body dto.ReqCreate
 }
 
 func (u *MerchantService) GetMerchant(ctx context.Context, param dto.ParamGetMerchant, sub string) ([]dto.ResGetMerchant, error) {
+	err := u.validator.Struct(param)
+	if err != nil {
+		fmt.Printf("error GetRecord: %v\n", err)
+		return nil, ierr.ErrBadRequest
+	}
+
+	// check is admin or not, this is for admin only
+	isAdmin, err := u.repo.User.IsAdmin(ctx, sub)
+	if err != nil {
+		return nil, ierr.ErrInternal
+	}
+
+	if !isAdmin {
+		return nil, ierr.ErrForbidden
+	}
+
 	res, err := u.repo.Merchant.GetMerchant(ctx, param, sub)
 	if err != nil {
 		return nil, err

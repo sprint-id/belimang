@@ -53,7 +53,7 @@ func (cr *itemRepo) AddItem(ctx context.Context, sub, merchantId string, item en
 func (cr *itemRepo) GetItem(ctx context.Context, param dto.ParamGetItem, sub string) ([]dto.ResGetItem, error) {
 	var query strings.Builder
 
-	query.WriteString("SELECT patient_identifier, user_id, symptoms, medications, created_at FROM item WHERE 1=1 ")
+	query.WriteString("SELECT id, name, product_category, price, image_url, created_at FROM items WHERE 1=1 ")
 
 	// param id
 	if param.ItemId != "" {
@@ -123,10 +123,36 @@ func (cr *itemRepo) GetItem(ctx context.Context, param dto.ParamGetItem, sub str
 	return results, nil
 }
 
-func (cr *itemRepo) GetItemsByIDs(ctx context.Context, ids []string) ([]entity.Item, error) {
-	q := `SELECT id, user_id, name, product_category, price, image_url, created_at FROM items WHERE id IN $1`
+func (cr *itemRepo) GetItemByID(ctx context.Context, id string) (entity.Item, error) {
+	q := `SELECT id, user_id, name, product_category, price, image_url, created_at FROM items WHERE id = $1`
 
-	rows, err := cr.conn.Query(ctx, q, ids)
+	var result entity.Item
+	var createdAt int64
+	err := cr.conn.QueryRow(ctx, q, id).Scan(
+		&result.ID,
+		&result.UserID,
+		&result.Name,
+		&result.ProductCategory,
+		&result.Price,
+		&result.ImageUrl,
+		&createdAt)
+	if err != nil {
+		return entity.Item{}, err
+	}
+
+	result.CreatedAt = timepkg.TimeToISO8601(time.Unix(createdAt, 0))
+
+	return result, nil
+}
+
+func (cr *itemRepo) GetItemsByIDs(ctx context.Context, ids []string) ([]entity.Item, error) {
+	fmt.Printf("ids: %v\n", ids)
+	// array to string like this (id_1, id_2)
+	strIds := arrayToString(ids)
+
+	q := `SELECT id, user_id, name, product_category, price, image_url, created_at FROM items WHERE id IN ($1)`
+
+	rows, err := cr.conn.Query(ctx, q, strIds)
 	if err != nil {
 		return nil, err
 	}
@@ -153,4 +179,12 @@ func (cr *itemRepo) GetItemsByIDs(ctx context.Context, ids []string) ([]entity.I
 	}
 
 	return results, nil
+}
+
+func arrayToString(arr []string) string {
+	// Create a slice of strings to hold the string representations of the integers
+	strArr := make([]string, len(arr))
+	copy(strArr, arr) // Fix: Use copy instead of loop
+	// Join the string slice with commas and wrap with parentheses
+	return fmt.Sprintf("(%s)", strings.Join(strArr, ","))
 }
