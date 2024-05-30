@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/sprint-id/eniqilo-server/internal/entity"
-	"github.com/sprint-id/eniqilo-server/pkg/auth"
+	"github.com/sprint-id/belimang/internal/entity"
+	"github.com/sprint-id/belimang/pkg/auth"
 )
 
 type (

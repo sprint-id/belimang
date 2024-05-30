@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	"github.com/sprint-id/eniqilo-server/internal/ierr"
-	"github.com/sprint-id/eniqilo-server/internal/service"
-	response "github.com/sprint-id/eniqilo-server/pkg/resp"
+	"github.com/sprint-id/belimang/internal/dto"
+	"github.com/sprint-id/belimang/internal/ierr"
+	"github.com/sprint-id/belimang/internal/service"
+	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type estimateHandler struct {

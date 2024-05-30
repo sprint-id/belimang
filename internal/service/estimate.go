@@ -3,24 +3,19 @@ package service
 import (
 	"context"
 	"fmt"
-	"math"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/sprint-id/eniqilo-server/internal/cfg"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	"github.com/sprint-id/eniqilo-server/internal/ierr"
-	"github.com/sprint-id/eniqilo-server/internal/repo"
+	"github.com/sprint-id/belimang/internal/cfg"
+	"github.com/sprint-id/belimang/internal/dto"
+	"github.com/sprint-id/belimang/internal/ierr"
+	"github.com/sprint-id/belimang/internal/repo"
+	"github.com/sprint-id/belimang/pkg/geo"
 )
 
 type EstimateService struct {
 	repo      *repo.Repo
 	validator *validator.Validate
 	cfg       *cfg.Cfg
-}
-
-type pos struct {
-	φ float64 // latitude, radians
-	ψ float64 // longitude, radians
 }
 
 func newEstimateService(repo *repo.Repo, validator *validator.Validate, cfg *cfg.Cfg) *EstimateService {
@@ -109,9 +104,9 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 		}
 	}
 
-	// calculate estimated time in second with velocity 40 km/h
-	estimatedTime = 3600 * (hsDist(degPos(userLat, userLong), degPos(merchantLat, merchantLong)) / 40)
-	fmt.Printf("original estimatedTime: %v\n", estimatedTime)
+	// calculate estimated time in minutes with velocity 40 km/h
+	estimatedTime = 60 * geo.CalculateDistance(userLat, userLong, merchantLat, merchantLong) / 40
+	fmt.Printf("original estimatedTimeInMinutes: %v\n", estimatedTime)
 
 	estimate := body.ToEstimateEntity(sub, totalPrice, int(estimatedTime))
 	res, err = u.repo.Estimate.CreateEstimate(ctx, sub, estimate)
@@ -123,20 +118,4 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 	}
 
 	return res, nil
-}
-
-// Reference: https://rosettacode.org/wiki/Haversine_formula#Go
-func haversine(θ float64) float64 {
-	return .5 * (1 - math.Cos(θ))
-}
-
-func degPos(lat, lon float64) pos {
-	return pos{lat * math.Pi / 180, lon * math.Pi / 180}
-}
-
-const rEarth = 6372.8 // km
-
-func hsDist(p1, p2 pos) float64 {
-	return 2 * rEarth * math.Asin(math.Sqrt(haversine(p2.φ-p1.φ)+
-		math.Cos(p1.φ)*math.Cos(p2.φ)*haversine(p2.ψ-p1.ψ)))
 }

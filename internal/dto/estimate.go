@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/sprint-id/eniqilo-server/internal/entity"
+import "github.com/sprint-id/belimang/internal/entity"
 
 // {
 // 	"userLocation": {

@@ -6,10 +6,10 @@ import (
 	"regexp"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/sprint-id/eniqilo-server/internal/cfg"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	"github.com/sprint-id/eniqilo-server/internal/ierr"
-	"github.com/sprint-id/eniqilo-server/internal/repo"
+	"github.com/sprint-id/belimang/internal/cfg"
+	"github.com/sprint-id/belimang/internal/dto"
+	"github.com/sprint-id/belimang/internal/ierr"
+	"github.com/sprint-id/belimang/internal/repo"
 )
 
 type MerchantService struct {
@@ -77,6 +77,31 @@ func (u *MerchantService) GetMerchant(ctx context.Context, param dto.ParamGetMer
 	}
 
 	res, err := u.repo.Merchant.GetMerchant(ctx, param, sub)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (u *MerchantService) GetNearbyMerchant(ctx context.Context, param dto.ParamGetNearbyMerchant, sub string, lat, long float64) ([]dto.ResGetNearbyMerchant, error) {
+	err := u.validator.Struct(param)
+	if err != nil {
+		fmt.Printf("error GetRecord: %v\n", err)
+		return nil, ierr.ErrBadRequest
+	}
+
+	// check is admin or not, this is for user only
+	isAdmin, err := u.repo.User.IsAdmin(ctx, sub)
+	if err != nil {
+		return nil, ierr.ErrInternal
+	}
+
+	if isAdmin {
+		return nil, ierr.ErrForbidden
+	}
+
+	res, err := u.repo.Merchant.GetNearbyMerchant(ctx, param, sub, lat, long)
 	if err != nil {
 		return nil, err
 	}

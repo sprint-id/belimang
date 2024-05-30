@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	"github.com/sprint-id/eniqilo-server/internal/ierr"
-	"github.com/sprint-id/eniqilo-server/internal/service"
-	response "github.com/sprint-id/eniqilo-server/pkg/resp"
+	"github.com/sprint-id/belimang/internal/dto"
+	"github.com/sprint-id/belimang/internal/ierr"
+	"github.com/sprint-id/belimang/internal/service"
+	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type merchantHandler struct {
@@ -121,6 +122,51 @@ func (h *merchantHandler) GetMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	merchants, err := h.merchantSvc.GetMerchant(r.Context(), param, token.Subject())
+	if err != nil {
+		code, msg := ierr.TranslateError(err)
+		http.Error(w, msg, code)
+		return
+	}
+
+	// show response
+	// fmt.Printf("GetMatch response: %+v\n", customers)
+
+	successRes := response.SuccessReponse{}
+	successRes.Message = "success"
+	successRes.Data = merchants
+
+	json.NewEncoder(w).Encode(successRes)
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *merchantHandler) GetNearbyMerchant(w http.ResponseWriter, r *http.Request) {
+	// get lat and long from URL
+	latAndLong := strings.Split(r.URL.Path, "/")[3]
+	fmt.Printf("latAndLong: %s\n", latAndLong)
+	lat := strings.Split(latAndLong, ",")[0]
+	long := strings.Split(latAndLong, ",")[1]
+	fmt.Printf("lat: %s, long: %s\n", lat, long)
+	// convert lat and long to float64
+	latFloat, _ := strconv.ParseFloat(lat, 64)
+	longFloat, _ := strconv.ParseFloat(long, 64)
+
+	// Query params
+	queryParams := r.URL.Query()
+	var param dto.ParamGetNearbyMerchant
+
+	param.MerchantId = queryParams.Get("merchantId")
+	param.Limit, _ = strconv.Atoi(queryParams.Get("limit"))
+	param.Offset, _ = strconv.Atoi(queryParams.Get("offset"))
+	param.Name = queryParams.Get("name")
+	param.MerchantCategory = queryParams.Get("merchantCategory")
+
+	token, _, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		http.Error(w, "failed to get token from request", http.StatusBadRequest)
+		return
+	}
+
+	merchants, err := h.merchantSvc.GetNearbyMerchant(r.Context(), param, token.Subject(), latFloat, longFloat)
 	if err != nil {
 		code, msg := ierr.TranslateError(err)
 		http.Error(w, msg, code)

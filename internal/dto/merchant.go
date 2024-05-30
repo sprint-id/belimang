@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/sprint-id/eniqilo-server/internal/entity"
+	"github.com/sprint-id/belimang/internal/entity"
 )
 
 type (
@@ -26,6 +26,14 @@ type (
 		CreatedAt        string `json:"createdAt"`
 	}
 
+	ParamGetNearbyMerchant struct {
+		MerchantId       string `json:"merchantId"`
+		Limit            int    `json:"limit"`
+		Offset           int    `json:"offset"`
+		Name             string `json:"name"`
+		MerchantCategory string `json:"merchantCategory"`
+	}
+
 	ResCreateMerchant struct {
 		MerchantId string `json:"merchantId"`
 	}
@@ -36,7 +44,13 @@ type (
 		MerchantCategory string   `json:"merchantCategory"`
 		ImageUrl         string   `json:"imageUrl"`
 		Location         Location `json:"location"`
+		Distance         float64  `json:"distance"`
 		CreatedAt        string   `json:"createdAt"`
+	}
+
+	ResGetNearbyMerchant struct {
+		Merchant ResGetMerchant `json:"merchant"`
+		Items    []ResGetItem   `json:"items"`
 	}
 )
 

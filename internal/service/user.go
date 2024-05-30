@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/sprint-id/eniqilo-server/internal/cfg"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	"github.com/sprint-id/eniqilo-server/internal/ierr"
-	"github.com/sprint-id/eniqilo-server/internal/repo"
-	"github.com/sprint-id/eniqilo-server/pkg/auth"
+	"github.com/sprint-id/belimang/internal/cfg"
+	"github.com/sprint-id/belimang/internal/dto"
+	"github.com/sprint-id/belimang/internal/ierr"
+	"github.com/sprint-id/belimang/internal/repo"
+	"github.com/sprint-id/belimang/pkg/auth"
 	"golang.org/x/crypto/bcrypt"
 )
 

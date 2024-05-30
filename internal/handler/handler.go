@@ -7,8 +7,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/lestrrat-go/jwx/v2/jwt"
-	"github.com/sprint-id/eniqilo-server/internal/cfg"
-	"github.com/sprint-id/eniqilo-server/internal/service"
+	"github.com/sprint-id/belimang/internal/cfg"
+	"github.com/sprint-id/belimang/internal/service"
 )
 
 type Handler struct {
@@ -49,6 +49,7 @@ func (h *Handler) registRoute() {
 
 		r.Post("/admin/merchants", merchantH.CreateMerchant)
 		r.Get("/admin/merchants", merchantH.GetMerchant)
+		r.Get("/merchants/nearby/{lat},{long}", merchantH.GetNearbyMerchant)
 		r.Post("/admin/merchants/{merchantId}/items", itemH.AddItem)
 		r.Get("/admin/merchants/{merchantId}/items", itemH.GetItem)
 

@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS merchants (
     name VARCHAR NOT NULL,
     merchant_category VARCHAR NOT NULL,
     image_url VARCHAR NOT NULL,
-    location_lat FLOAT NOT NULL,
-    location_long FLOAT NOT NULL,
+    location_lat DOUBLE PRECISION NOT NULL,
+    location_long DOUBLE PRECISION NOT NULL,
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS estimates (
     delivery_time INT NOT NULL,
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
+
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE INDEX idx_users_username ON users (username);
 CREATE INDEX idx_users_id ON users (id);

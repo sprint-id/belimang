@@ -13,3 +13,10 @@ build:
 .PHONY: docker-build
 docker-build:
 	docker build -t syarif/halosuster:latest .
+
+# Down, Drop, and Up New Database
+.PHONY: reset-db
+reset-db:
+	migrate -database "postgres://postgres:password@localhost:5432/belimang?sslmode=disable" -path db/migrations down
+	migrate -database "postgres://postgres:password@localhost:5432/belimang?sslmode=disable" -path db/migrations drop
+	migrate -database "postgres://postgres:password@localhost:5432/belimang?sslmode=disable" -path db/migrations up

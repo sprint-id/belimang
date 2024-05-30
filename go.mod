@@ -1,4 +1,4 @@
-module github.com/sprint-id/eniqilo-server
+module github.com/sprint-id/belimang
 
 go 1.21.6
 

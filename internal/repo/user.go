@@ -6,8 +6,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sprint-id/eniqilo-server/internal/entity"
-	"github.com/sprint-id/eniqilo-server/internal/ierr"
+	"github.com/sprint-id/belimang/internal/entity"
+	"github.com/sprint-id/belimang/internal/ierr"
 )
 
 type userRepo struct {

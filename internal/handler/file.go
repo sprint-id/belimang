@@ -13,9 +13,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
-	"github.com/sprint-id/eniqilo-server/internal/cfg"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	response "github.com/sprint-id/eniqilo-server/pkg/resp"
+	"github.com/sprint-id/belimang/internal/cfg"
+	"github.com/sprint-id/belimang/internal/dto"
+	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type fileHandler struct {

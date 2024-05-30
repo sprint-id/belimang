@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/sprint-id/eniqilo-server/internal/entity"
+	"github.com/sprint-id/belimang/internal/entity"
 )
 
 // {

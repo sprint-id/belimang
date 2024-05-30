@@ -5,14 +5,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/sprint-id/eniqilo-server/internal/cfg"
-	"github.com/sprint-id/eniqilo-server/internal/handler"
-	"github.com/sprint-id/eniqilo-server/internal/repo"
-	"github.com/sprint-id/eniqilo-server/internal/service"
-	"github.com/sprint-id/eniqilo-server/pkg/env"
-	"github.com/sprint-id/eniqilo-server/pkg/postgre"
-	"github.com/sprint-id/eniqilo-server/pkg/router"
-	"github.com/sprint-id/eniqilo-server/pkg/validator"
+	"github.com/sprint-id/belimang/internal/cfg"
+	"github.com/sprint-id/belimang/internal/handler"
+	"github.com/sprint-id/belimang/internal/repo"
+	"github.com/sprint-id/belimang/internal/service"
+	"github.com/sprint-id/belimang/pkg/env"
+	"github.com/sprint-id/belimang/pkg/postgre"
+	"github.com/sprint-id/belimang/pkg/router"
+	"github.com/sprint-id/belimang/pkg/validator"
 )
 
 func main() {

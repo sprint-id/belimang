@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sprint-id/eniqilo-server/internal/dto"
-	"github.com/sprint-id/eniqilo-server/internal/entity"
-	timepkg "github.com/sprint-id/eniqilo-server/pkg/time"
+	"github.com/sprint-id/belimang/internal/dto"
+	"github.com/sprint-id/belimang/internal/entity"
+	timepkg "github.com/sprint-id/belimang/pkg/time"
 )
 
 type itemRepo struct {
