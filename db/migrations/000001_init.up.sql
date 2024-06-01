@@ -39,6 +39,13 @@ CREATE TABLE IF NOT EXISTS estimates (
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
+CREATE TABLE IF NOT EXISTS orders (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    estimate_id UUID REFERENCES estimates(id) ON DELETE CASCADE,
+    created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
+);
+
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE INDEX idx_users_username ON users (username);

@@ -16,6 +16,7 @@ type Service struct {
 	Merchant *MerchantService
 	Item     *ItemService
 	Estimate *EstimateService
+	Order    *OrderService
 }
 
 func NewService(repo *repo.Repo, validator *validator.Validate, cfg *cfg.Cfg) *Service {
@@ -28,6 +29,7 @@ func NewService(repo *repo.Repo, validator *validator.Validate, cfg *cfg.Cfg) *S
 	service.Item = newItemService(repo, validator, cfg)
 	service.Merchant = newMerchantService(repo, validator, cfg)
 	service.Estimate = newEstimateService(repo, validator, cfg)
+	service.Order = newOrderService(repo, validator, cfg)
 
 	return &service
 }

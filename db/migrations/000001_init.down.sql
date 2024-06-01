@@ -11,6 +11,8 @@ DROP INDEX IF EXISTS idx_estimates_user_id;
 
 DROP EXTENSION IF EXISTS postgis CASCADE;
 
+DROP TABLE IF EXISTS orders;
+
 DROP TABLE IF EXISTS estimates;
 
 DROP TABLE IF EXISTS items;

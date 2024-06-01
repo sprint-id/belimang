@@ -11,6 +11,7 @@ type Repo struct {
 	Item     *itemRepo
 	Merchant *merchantRepo
 	Estimate *estimateRepo
+	Order    *orderRepo
 }
 
 func NewRepo(conn *pgxpool.Pool) *Repo {
@@ -21,6 +22,7 @@ func NewRepo(conn *pgxpool.Pool) *Repo {
 	repo.Item = newItemRepo(conn)
 	repo.Merchant = newMerchantRepo(conn)
 	repo.Estimate = newEstimateRepo(conn)
+	repo.Order = newOrderRepo(conn)
 
 	return &repo
 }

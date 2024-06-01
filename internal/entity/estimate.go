@@ -36,4 +36,24 @@ type (
 
 		UserID string `json:"user_id"`
 	}
+
+	UserLocation struct {
+		Lat  float64 `json:"lat"`
+		Long float64 `json:"long"`
+	}
+
+	OrderDetail struct {
+		MerchantID      string `json:"merchant_id"`
+		IsStartingPoint bool   `json:"is_starting_point"`
+		Items           []Item `json:"items"`
+
+		EstimateID string `json:"estimate_id"`
+	}
+
+	ItemDetail struct {
+		ItemID   string `json:"item_id"`
+		Quantity int    `json:"quantity"`
+
+		EstimateID string `json:"estimate_id"`
+	}
 )

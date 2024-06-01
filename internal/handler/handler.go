@@ -33,6 +33,7 @@ func (h *Handler) registRoute() {
 	merchantH := newMerchantHandler(h.service.Merchant)
 	itemH := newItemHandler(h.service.Item)
 	estimateH := newEstimateHandler(h.service.Estimate)
+	orderH := newOrderHandler(h.service.Order)
 	fileH := newFileHandler(h.cfg)
 
 	r.Use(middleware.RedirectSlashes)
@@ -54,6 +55,7 @@ func (h *Handler) registRoute() {
 		r.Get("/admin/merchants/{merchantId}/items", itemH.GetItem)
 
 		r.Post("/users/estimate", estimateH.CreateEstimate)
+		r.Post("/users/orders", orderH.CreateOrder)
 
 		r.Post("/image", fileH.Upload)
 	})
