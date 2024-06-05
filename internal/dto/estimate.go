@@ -61,39 +61,34 @@ func (d *ReqCreateEstimate) ToEstimateEntity(userId string, totalPrice int, esti
 	return entity.Estimate{
 		TotalPrice:   totalPrice,
 		DeliveryTime: estimatedTime,
-		UserID:       userId,
+		UserLocation: entity.UserLocation{
+			Lat:  d.UserLocation.Lat,
+			Long: d.UserLocation.Long,
+		},
+		Orders: d.toOrderDetailEntity(),
+		UserID: userId,
 	}
 }
 
-func (d *ReqCreateEstimate) ToUserLocationEntity() entity.UserLocation {
-	return entity.UserLocation{
-		Lat:  d.UserLocation.Lat,
-		Long: d.UserLocation.Long,
-	}
-}
-
-func (d *ReqCreateEstimate) ToOrderDetailEntity(estimateId string) []entity.OrderDetail {
+func (d *ReqCreateEstimate) toOrderDetailEntity() []entity.OrderDetail {
 	var orders []entity.OrderDetail
 	for _, order := range d.Orders {
 		orders = append(orders, entity.OrderDetail{
-			EstimateID:      estimateId,
 			MerchantID:      order.MerchantID,
 			IsStartingPoint: *order.IsStartingPoint,
+			Items:           order.toItemDetailEntity(),
 		})
 	}
 	return orders
 }
 
-func (d *ReqCreateEstimate) ToItemDetailEntity(estimateId string) []entity.ItemDetail {
+func (d *ReqOrder) toItemDetailEntity() []entity.ItemDetail {
 	var items []entity.ItemDetail
-	for _, order := range d.Orders {
-		for _, item := range order.Items {
-			items = append(items, entity.ItemDetail{
-				EstimateID: estimateId,
-				ItemID:     item.ItemID,
-				Quantity:   item.Quantity,
-			})
-		}
+	for _, item := range d.Items {
+		items = append(items, entity.ItemDetail{
+			ItemID:   item.ItemID,
+			Quantity: item.Quantity,
+		})
 	}
 	return items
 }

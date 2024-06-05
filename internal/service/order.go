@@ -50,3 +50,24 @@ func (u *OrderService) CreateOrder(ctx context.Context, body dto.ReqCreateOrder,
 
 	return res, nil
 }
+
+func (u *OrderService) GetOrderHistory(ctx context.Context, param dto.ParamGetOrderHistory, sub string) ([]dto.ResGetOrderHistory, error) {
+	var res []dto.ResGetOrderHistory
+
+	// check if user or admin, this is for user only
+	isAdmin, err := u.repo.User.IsAdmin(ctx, sub)
+	if err != nil {
+		return nil, ierr.ErrInternal
+	}
+
+	if isAdmin {
+		return nil, ierr.ErrForbidden
+	}
+
+	res, err = u.repo.Order.GetOrderHistory(ctx, param, sub)
+	if err != nil {
+		return nil, ierr.ErrInternal
+	}
+
+	return res, nil
+}

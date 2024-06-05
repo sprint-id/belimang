@@ -56,6 +56,7 @@ func (h *Handler) registRoute() {
 
 		r.Post("/users/estimate", estimateH.CreateEstimate)
 		r.Post("/users/orders", orderH.CreateOrder)
+		r.Get("/users/orders", orderH.GetOrderHistory)
 
 		r.Post("/image", fileH.Upload)
 	})

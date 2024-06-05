@@ -29,6 +29,31 @@ func (cr *estimateRepo) CreateEstimate(ctx context.Context, sub string, estimate
 		return dto.ResCreateEstimate{}, err
 	}
 
+	// insert order details
+	for _, order := range estimate.Orders {
+		q = `INSERT INTO estimate_orders (id, estimate_id, merchant_id, is_starting_point, created_at)
+		VALUES ( gen_random_uuid(), $1, $2, $3, EXTRACT(EPOCH FROM now())::bigint) RETURNING id`
+
+		var estimateOrderID string
+		err = cr.conn.QueryRow(ctx, q, id, order.MerchantID, order.IsStartingPoint).Scan(&estimateOrderID)
+		if err != nil {
+			fmt.Printf("error query: %v\n", err)
+			return dto.ResCreateEstimate{}, err
+		}
+
+		// insert items
+		for _, item := range order.Items {
+			q = `INSERT INTO estimate_order_items (id, estimate_order_id, item_id, quantity, created_at)
+			VALUES ( gen_random_uuid(), $1, $2, $3, EXTRACT(EPOCH FROM now())::bigint) RETURNING id`
+
+			_, err = cr.conn.Exec(ctx, q, estimateOrderID, item.ItemID, item.Quantity)
+			if err != nil {
+				fmt.Printf("error query: %v\n", err)
+				return dto.ResCreateEstimate{}, err
+			}
+		}
+	}
+
 	return dto.ResCreateEstimate{
 		CalculatedEstimateID:           id,
 		TotalPrice:                     estimate.TotalPrice,

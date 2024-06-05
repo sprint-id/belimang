@@ -13,6 +13,12 @@ DROP EXTENSION IF EXISTS postgis CASCADE;
 
 DROP TABLE IF EXISTS orders;
 
+DROP TABLE IF EXISTS estimate_order_items;
+
+DROP TABLE IF EXISTS estimate_orders;
+
+DROP TABLE IF EXISTS estimate_users_locations;
+
 DROP TABLE IF EXISTS estimates;
 
 DROP TABLE IF EXISTS items;

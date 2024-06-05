@@ -29,10 +29,12 @@ package entity
 
 type (
 	Estimate struct {
-		ID           string `json:"id"`
-		TotalPrice   int    `json:"total_price"`
-		DeliveryTime int    `json:"delivery_time"`
-		CreatedAt    string `json:"created_at"`
+		ID           string        `json:"id"`
+		TotalPrice   int           `json:"total_price"`
+		DeliveryTime int           `json:"delivery_time"`
+		UserLocation UserLocation  `json:"user_location"`
+		Orders       []OrderDetail `json:"orders"`
+		CreatedAt    string        `json:"created_at"`
 
 		UserID string `json:"user_id"`
 	}
@@ -43,9 +45,9 @@ type (
 	}
 
 	OrderDetail struct {
-		MerchantID      string `json:"merchant_id"`
-		IsStartingPoint bool   `json:"is_starting_point"`
-		Items           []Item `json:"items"`
+		MerchantID      string       `json:"merchant_id"`
+		IsStartingPoint bool         `json:"is_starting_point"`
+		Items           []ItemDetail `json:"items"`
 
 		EstimateID string `json:"estimate_id"`
 	}
@@ -54,6 +56,6 @@ type (
 		ItemID   string `json:"item_id"`
 		Quantity int    `json:"quantity"`
 
-		EstimateID string `json:"estimate_id"`
+		OrderDetailID string `json:"order_detail_id"`
 	}
 )

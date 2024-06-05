@@ -59,7 +59,17 @@ type (
 
 	ResOrder struct {
 		Merchant entity.Merchant `json:"merchant"`
-		Items    []entity.Item   `json:"items"`
+		Items    []ResItem       `json:"items"`
+	}
+
+	ResItem struct {
+		ItemID          string `json:"itemId"`
+		Name            string `json:"name"`
+		ProductCategory string `json:"productCategory"`
+		Price           int    `json:"price"`
+		Quantity        int    `json:"quantity"`
+		ImageURL        string `json:"imageUrl"`
+		CreatedAt       string `json:"createdAt"`
 	}
 )
 

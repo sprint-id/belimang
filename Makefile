@@ -12,7 +12,7 @@ build:
 # Build the docker image
 .PHONY: docker-build
 docker-build:
-	docker build -t syarif/halosuster:latest .
+	docker build -t syarif/belimang:latest .
 
 # Down, Drop, and Up New Database
 .PHONY: reset-db

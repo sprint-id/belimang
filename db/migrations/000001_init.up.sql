@@ -39,6 +39,30 @@ CREATE TABLE IF NOT EXISTS estimates (
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
+CREATE TABLE IF NOT EXISTS estimate_users_locations (
+    id UUID PRIMARY KEY,
+    estimate_id UUID REFERENCES estimates(id) ON DELETE CASCADE,
+    location_lat DOUBLE PRECISION NOT NULL,
+    location_long DOUBLE PRECISION NOT NULL,
+    created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
+);
+
+CREATE TABLE IF NOT EXISTS estimate_orders (
+    id UUID PRIMARY KEY,
+    estimate_id UUID REFERENCES estimates(id) ON DELETE CASCADE,
+    merchant_id UUID REFERENCES merchants(id) ON DELETE CASCADE,
+    is_starting_point BOOLEAN DEFAULT FALSE,
+    created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
+);
+
+CREATE TABLE IF NOT EXISTS estimate_order_items (
+    id UUID PRIMARY KEY,
+    estimate_order_id UUID REFERENCES estimate_orders(id) ON DELETE CASCADE,
+    item_id UUID REFERENCES items(id) ON DELETE CASCADE,
+    quantity INT NOT NULL,
+    created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
+);
+
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
