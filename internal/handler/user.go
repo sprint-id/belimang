@@ -7,7 +7,6 @@ import (
 	"github.com/sprint-id/belimang/internal/dto"
 	"github.com/sprint-id/belimang/internal/ierr"
 	"github.com/sprint-id/belimang/internal/service"
-	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type userHandler struct {
@@ -34,13 +33,9 @@ func (h *userHandler) RegisterAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "User registered successfully"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
@@ -63,13 +58,9 @@ func (h *userHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "User registered successfully"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
@@ -92,12 +83,8 @@ func (h *userHandler) LoginAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "User logged successfully"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
@@ -120,12 +107,8 @@ func (h *userHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "User logged successfully"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return

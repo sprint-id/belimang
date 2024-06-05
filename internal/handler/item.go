@@ -11,7 +11,6 @@ import (
 	"github.com/sprint-id/belimang/internal/dto"
 	"github.com/sprint-id/belimang/internal/ierr"
 	"github.com/sprint-id/belimang/internal/service"
-	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type itemHandler struct {
@@ -79,13 +78,9 @@ func (h *itemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "success"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // Set HTTP status code to 201
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
@@ -116,12 +111,13 @@ func (h *itemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "success"
-	successRes.Data = records
-
-	json.NewEncoder(w).Encode(successRes)
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) // Set HTTP status code to 201
+	err = json.NewEncoder(w).Encode(records)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
 
 // The contains function checks if a slice contains a string

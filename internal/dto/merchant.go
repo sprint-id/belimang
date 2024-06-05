@@ -13,8 +13,8 @@ type (
 	}
 
 	Location struct {
-		Lat  float64 `json:"lat"`
-		Long float64 `json:"long"`
+		Lat  float64 `json:"lat" validate:"required"`
+		Long float64 `json:"long" validate:"required"`
 	}
 
 	ParamGetMerchant struct {

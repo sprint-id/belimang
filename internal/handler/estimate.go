@@ -9,7 +9,6 @@ import (
 	"github.com/sprint-id/belimang/internal/dto"
 	"github.com/sprint-id/belimang/internal/ierr"
 	"github.com/sprint-id/belimang/internal/service"
-	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type estimateHandler struct {
@@ -75,13 +74,9 @@ func (h *estimateHandler) CreateEstimate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "success"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // Set HTTP status code to 201
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return

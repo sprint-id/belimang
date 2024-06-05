@@ -91,13 +91,9 @@ func (h *merchantHandler) CreateMerchant(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	successRes := response.SuccessReponse{}
-	successRes.Message = "success"
-	successRes.Data = res
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // Set HTTP status code to 201
-	err = json.NewEncoder(w).Encode(successRes)
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
@@ -128,15 +124,22 @@ func (h *merchantHandler) GetMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// show response
-	// fmt.Printf("GetMatch response: %+v\n", customers)
-
-	successRes := response.SuccessReponse{}
+	successRes := response.SuccessPageReponse{}
 	successRes.Message = "success"
 	successRes.Data = merchants
+	successRes.Meta = response.Meta{
+		Offset: param.Offset,
+		Limit:  param.Limit,
+		Total:  len(merchants),
+	}
 
-	json.NewEncoder(w).Encode(successRes)
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) // Set HTTP status code to 201
+	err = json.NewEncoder(w).Encode(successRes)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *merchantHandler) GetNearbyMerchant(w http.ResponseWriter, r *http.Request) {
@@ -173,13 +176,11 @@ func (h *merchantHandler) GetNearbyMerchant(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// show response
-	// fmt.Printf("GetMatch response: %+v\n", customers)
-
-	successRes := response.SuccessReponse{}
-	successRes.Message = "success"
-	successRes.Data = merchants
-
-	json.NewEncoder(w).Encode(successRes)
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) // Set HTTP status code to 201
+	err = json.NewEncoder(w).Encode(merchants)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
