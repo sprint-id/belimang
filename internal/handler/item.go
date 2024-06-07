@@ -11,6 +11,7 @@ import (
 	"github.com/sprint-id/belimang/internal/dto"
 	"github.com/sprint-id/belimang/internal/ierr"
 	"github.com/sprint-id/belimang/internal/service"
+	response "github.com/sprint-id/belimang/pkg/resp"
 )
 
 type itemHandler struct {
@@ -23,7 +24,7 @@ func newItemHandler(itemSvc *service.ItemService) *itemHandler {
 
 func (h *itemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	merchantId := strings.Split(r.URL.Path, "/")[3]
-	fmt.Printf("id: %s\n", merchantId)
+	// fmt.Printf("id: %s\n", merchantId)
 	var req dto.ReqAddItem
 	var res dto.ResAddItem
 	var jsonData map[string]interface{}
@@ -111,9 +112,17 @@ func (h *itemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	successRes := response.SuccessDataReponse{}
+	successRes.Data = records
+	successRes.Meta = response.Meta{
+		Offset: param.Offset,
+		Limit:  param.Limit,
+		Total:  len(records),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK) // Set HTTP status code to 201
-	err = json.NewEncoder(w).Encode(records)
+	err = json.NewEncoder(w).Encode(successRes)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return

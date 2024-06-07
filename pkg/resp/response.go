@@ -12,6 +12,11 @@ type (
 		Meta    Meta   `json:"meta"`
 	}
 
+	SuccessDataReponse struct {
+		Data any  `json:"data"`
+		Meta Meta `json:"meta"`
+	}
+
 	Meta struct {
 		Limit  int `json:"limit"`
 		Offset int `json:"offset"`

@@ -132,6 +132,7 @@ func (u *UserService) LoginUser(ctx context.Context, body dto.ReqLogin) (dto.Res
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)); err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
+			fmt.Printf("error LoginUser password: %v\n", err)
 			return res, ierr.ErrBadRequest
 		}
 		return res, err

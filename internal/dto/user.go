@@ -33,5 +33,5 @@ func (d *ReqAdminRegister) ToAdminEntity(cryptCost int) entity.User {
 }
 
 func (d *ReqUserRegister) ToUserEntity(cryptCost int) entity.User {
-	return entity.User{Username: d.Username, Password: auth.HashPassword("password", cryptCost), Email: d.Email, IsAdmin: false}
+	return entity.User{Username: d.Username, Password: auth.HashPassword(d.Password, cryptCost), Email: d.Email, IsAdmin: false}
 }

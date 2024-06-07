@@ -45,6 +45,12 @@ func (u *ItemService) AddItem(ctx context.Context, body dto.ReqAddItem, sub, mer
 		return dto.ResAddItem{}, ierr.ErrForbidden
 	}
 
+	// validate image url
+	// check Image URL if invalid or not complete URL
+	if !isValidURL(body.ImageUrl) {
+		return dto.ResAddItem{}, ierr.ErrInvalidURL
+	}
+
 	item := body.ToItemEntity(sub)
 	res, err = u.repo.Item.AddItem(ctx, sub, merchantId, item)
 	if err != nil {

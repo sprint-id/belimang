@@ -66,7 +66,7 @@ func (cr *itemRepo) GetItem(ctx context.Context, param dto.ParamGetItem, sub str
 
 	// it should search by wildcard (ex: if search by name=een then user with name kayleen should appear)
 	if param.Name != "" {
-		query.WriteString(fmt.Sprintf("AND nip LIKE '%s' ", fmt.Sprintf("%%%s%%", param.Name)))
+		query.WriteString(fmt.Sprintf("AND name LIKE '%s' ", fmt.Sprintf("%%%s%%", param.Name)))
 	}
 
 	// productCategory filter based on category
