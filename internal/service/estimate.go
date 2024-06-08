@@ -10,6 +10,7 @@ import (
 	"github.com/sprint-id/belimang/internal/ierr"
 	"github.com/sprint-id/belimang/internal/repo"
 	"github.com/sprint-id/belimang/pkg/geo"
+	"github.com/sprint-id/belimang/pkg/ids"
 )
 
 type EstimateService struct {
@@ -38,6 +39,44 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 
 	if isAdmin {
 		return dto.ResCreateEstimate{}, ierr.ErrForbidden
+	}
+
+	// check just one starting point
+	var startingPointCount int
+	for _, order := range body.Orders {
+		if *order.IsStartingPoint {
+			startingPointCount++
+		}
+	}
+
+	if startingPointCount != 1 {
+		return dto.ResCreateEstimate{}, ierr.ErrBadRequest
+	}
+
+	// check merchant id and order id is valid form as uuid
+	for _, order := range body.Orders {
+		if !ids.ValidateUUID(order.MerchantID) {
+			return dto.ResCreateEstimate{}, ierr.ErrNotFound
+		}
+		// check merchant id is valid in database
+		_, err := u.repo.Merchant.GetMerchantByID(ctx, order.MerchantID)
+		if err != nil {
+			return dto.ResCreateEstimate{}, ierr.ErrNotFound
+		}
+	}
+
+	// check item id is valid
+	for _, order := range body.Orders {
+		for _, item := range order.Items {
+			if !ids.ValidateUUID(item.ItemID) {
+				return dto.ResCreateEstimate{}, ierr.ErrNotFound
+			}
+			// check item id is valid in database
+			_, err := u.repo.Item.GetItemByID(ctx, item.ItemID)
+			if err != nil {
+				return dto.ResCreateEstimate{}, ierr.ErrNotFound
+			}
+		}
 	}
 
 	// calculate total price from items price in orders
@@ -104,6 +143,9 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 		}
 	}
 
+	// calculate distance between user and merchant
+	// distance := geo.CalculateDistance(userLat, userLong, merchantLat, merchantLong)
+	// fmt.Printf("original distance: %v\n", distance)
 	// calculate estimated time in minutes with velocity 40 km/h
 	estimatedTime = 60 * geo.CalculateDistance(userLat, userLong, merchantLat, merchantLong) / 40
 	fmt.Printf("original estimatedTimeInMinutes: %v\n", estimatedTime)

@@ -135,6 +135,15 @@ func (mr *merchantRepo) GetNearbyMerchant(ctx context.Context, param dto.ParamGe
 		") AS distance, " +
 		"created_at FROM merchants WHERE 1=1 ")
 
+	if param.Name != "" {
+		query.WriteString(fmt.Sprintf("AND LOWER(name) LIKE LOWER('%s') ", fmt.Sprintf("%%%s%%", param.Name)))
+	}
+
+	// merchant category
+	if param.MerchantCategory != "" {
+		query.WriteString(fmt.Sprintf("AND LOWER(merchant_category) LIKE LOWER('%s') ", fmt.Sprintf("%%%s%%", param.MerchantCategory)))
+	}
+
 	// order by distance
 	query.WriteString("ORDER BY distance")
 

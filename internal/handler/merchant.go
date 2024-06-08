@@ -150,8 +150,16 @@ func (h *merchantHandler) GetNearbyMerchant(w http.ResponseWriter, r *http.Reque
 	long := strings.Split(latAndLong, ",")[1]
 	fmt.Printf("lat: %s, long: %s\n", lat, long)
 	// convert lat and long to float64
-	latFloat, _ := strconv.ParseFloat(lat, 64)
-	longFloat, _ := strconv.ParseFloat(long, 64)
+	latFloat, err := strconv.ParseFloat(lat, 64)
+	if err != nil {
+		http.Error(w, "failed to parse lat", http.StatusBadRequest)
+		return
+	}
+	longFloat, err := strconv.ParseFloat(long, 64)
+	if err != nil {
+		http.Error(w, "failed to parse long", http.StatusBadRequest)
+		return
+	}
 
 	// Query params
 	queryParams := r.URL.Query()
@@ -176,9 +184,17 @@ func (h *merchantHandler) GetNearbyMerchant(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	successRes := response.SuccessDataReponse{}
+	successRes.Data = merchants
+	successRes.Meta = response.Meta{
+		Offset: param.Offset,
+		Limit:  param.Limit,
+		Total:  len(merchants),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK) // Set HTTP status code to 201
-	err = json.NewEncoder(w).Encode(merchants)
+	err = json.NewEncoder(w).Encode(successRes)
 	if err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
