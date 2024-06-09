@@ -79,15 +79,17 @@ CREATE INDEX IF NOT EXISTS idx_merchants_id ON merchants (id);
 CREATE INDEX IF NOT EXISTS idx_merchants_user_id ON merchants (user_id);
 CREATE INDEX IF NOT EXISTS idx_merchants_merchant_category ON merchants (merchant_category);
 CREATE INDEX IF NOT EXISTS idx_merchants_name ON merchants (name);
+-- Creating an index on the merchants table for geolocation searches
+CREATE INDEX IF NOT EXISTS idx_merchants_location ON merchants USING gist (
+    point(location_lat, location_long)
+);
+
 CREATE INDEX IF NOT EXISTS idx_items_id ON items (id);
 CREATE INDEX IF NOT EXISTS idx_items_user_id ON items (user_id);
 CREATE INDEX IF NOT EXISTS idx_items_product_category ON items (product_category);
 CREATE INDEX IF NOT EXISTS idx_estimates_id ON estimates (id);
 CREATE INDEX IF NOT EXISTS idx_estimates_user_id ON estimates (user_id);
 
--- Creating an index on the merchants table for geolocation searches
-CREATE INDEX IF NOT EXISTS idx_merchants_location ON merchants USING gist (
-    point(location_lat, location_long)
-);
+
 
 COMMIT TRANSACTION;
