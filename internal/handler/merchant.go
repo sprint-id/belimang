@@ -144,22 +144,28 @@ func (h *merchantHandler) GetMerchant(w http.ResponseWriter, r *http.Request) {
 
 func (h *merchantHandler) GetNearbyMerchant(w http.ResponseWriter, r *http.Request) {
 	// get lat and long from URL
+	var latFloat, longFloat float64
 	latAndLong := strings.Split(r.URL.Path, "/")[3]
 	fmt.Printf("latAndLong: %s\n", latAndLong)
 	lat := strings.Split(latAndLong, ",")[0]
 	long := strings.Split(latAndLong, ",")[1]
 	fmt.Printf("lat: %s, long: %s\n", lat, long)
-	// convert lat and long to float64
+
+	// check if lat long not a number
 	latFloat, err := strconv.ParseFloat(lat, 64)
 	if err != nil {
-		http.Error(w, "failed to parse lat", http.StatusBadRequest)
+		http.Error(w, "lat is not a number", http.StatusBadRequest)
 		return
 	}
-	longFloat, err := strconv.ParseFloat(long, 64)
+
+	longFloat, err = strconv.ParseFloat(long, 64)
 	if err != nil {
-		http.Error(w, "failed to parse long", http.StatusBadRequest)
+		http.Error(w, "long is not a number", http.StatusBadRequest)
 		return
 	}
+
+	// show lat and long in float
+	fmt.Printf("after parse lat: %.9f, long: %.9f\n", latFloat, longFloat)
 
 	// Query params
 	queryParams := r.URL.Query()

@@ -145,6 +145,7 @@ func (cr *orderRepo) GetOrderHistory(ctx context.Context, param dto.ParamGetOrde
 
 			currentMerchantID = merchantID
 			merchant.ID = currentMerchantID
+			merchant.CreatedAt = timepkg.TimeToISO8601(time.Unix(merchantCreatedAt, 0))
 			currentMerchant = dto.ResOrder{
 				Merchant: merchant,
 				Items:    []dto.ResItem{},

@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS merchants (
     name VARCHAR NOT NULL,
     merchant_category VARCHAR NOT NULL,
     image_url VARCHAR NOT NULL,
-    location_lat DOUBLE PRECISION NOT NULL,
-    location_long DOUBLE PRECISION NOT NULL,
+    location_lat FLOAT NOT NULL,
+    location_long FLOAT NOT NULL,
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
@@ -42,8 +42,8 @@ CREATE TABLE IF NOT EXISTS estimates (
 CREATE TABLE IF NOT EXISTS estimate_users_locations (
     id UUID PRIMARY KEY,
     estimate_id UUID REFERENCES estimates(id) ON DELETE CASCADE,
-    location_lat DOUBLE PRECISION NOT NULL,
-    location_long DOUBLE PRECISION NOT NULL,
+    location_lat FLOAT NOT NULL,
+    location_long FLOAT NOT NULL,
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
@@ -70,17 +70,24 @@ CREATE TABLE IF NOT EXISTS orders (
     created_at BIGINT DEFAULT EXTRACT(EPOCH FROM NOW())
 );
 
-CREATE EXTENSION IF NOT EXISTS postgis;
+-- Enable necessary extensions
+CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
-CREATE INDEX idx_users_username ON users (username);
-CREATE INDEX idx_users_id ON users (id);
-CREATE INDEX idx_merchants_id ON merchants (id);
-CREATE INDEX idx_merchants_user_id ON merchants (user_id);
-CREATE INDEX idx_merchants_merchant_category ON merchants (merchant_category);
-CREATE INDEX idx_items_id ON items (id);
-CREATE INDEX idx_items_user_id ON items (user_id);
-CREATE INDEX idx_items_product_category ON items (product_category);
-CREATE INDEX idx_estimates_id ON estimates (id);
-CREATE INDEX idx_estimates_user_id ON estimates (user_id);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
+CREATE INDEX IF NOT EXISTS idx_users_id ON users (id);
+CREATE INDEX IF NOT EXISTS idx_merchants_id ON merchants (id);
+CREATE INDEX IF NOT EXISTS idx_merchants_user_id ON merchants (user_id);
+CREATE INDEX IF NOT EXISTS idx_merchants_merchant_category ON merchants (merchant_category);
+CREATE INDEX IF NOT EXISTS idx_merchants_name ON merchants (name);
+CREATE INDEX IF NOT EXISTS idx_items_id ON items (id);
+CREATE INDEX IF NOT EXISTS idx_items_user_id ON items (user_id);
+CREATE INDEX IF NOT EXISTS idx_items_product_category ON items (product_category);
+CREATE INDEX IF NOT EXISTS idx_estimates_id ON estimates (id);
+CREATE INDEX IF NOT EXISTS idx_estimates_user_id ON estimates (user_id);
+
+-- Creating an index on the merchants table for geolocation searches
+CREATE INDEX IF NOT EXISTS idx_merchants_location ON merchants USING gist (
+    point(location_lat, location_long)
+);
 
 COMMIT TRANSACTION;

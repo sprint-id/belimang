@@ -6,7 +6,7 @@ type Merchant struct {
 	MerchantCategory string   `json:"merchantCategory"`
 	ImageUrl         string   `json:"imageUrl"`
 	Location         Location `json:"location"`
-	CreatedAt        string   `json:"created_at"`
+	CreatedAt        string   `json:"createdAt"`
 
 	UserID string `json:"user_id"`
 }

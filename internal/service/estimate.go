@@ -149,6 +149,10 @@ func (u *EstimateService) CreateEstimate(ctx context.Context, body dto.ReqCreate
 	// print user and merchant location
 	fmt.Printf("userLat: %v, userLong: %v\n", userLat, userLong)
 	fmt.Printf("merchantLat: %v, merchantLong: %v\n", merchantLat, merchantLong)
+	// if distance is > 3 km, bad request
+	if distance > 3 {
+		return dto.ResCreateEstimate{}, ierr.ErrBadRequest
+	}
 	// calculate estimated time in minutes with velocity 40 km/h
 	estimatedTime = 60 * geo.CalculateDistance(userLat, userLong, merchantLat, merchantLong) / 40
 	fmt.Printf("original estimatedTimeInMinutes: %v\n", estimatedTime)

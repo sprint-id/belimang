@@ -127,13 +127,30 @@ func (mr *merchantRepo) GetMerchantByID(ctx context.Context, id string) (entity.
 
 func (mr *merchantRepo) GetNearbyMerchant(ctx context.Context, param dto.ParamGetNearbyMerchant, sub string, lat, long float64) ([]dto.ResGetNearbyMerchant, error) {
 	var query strings.Builder
-
-	query.WriteString("SELECT id, name, merchant_category, image_url, location_lat, location_long, " +
-		"ST_Distance(" +
-		"ST_SetSRID(ST_MakePoint(location_long, location_lat), 4326)::geography, " +
-		"ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography " +
-		") AS distance, " +
-		"created_at FROM merchants WHERE 1=1 ")
+	// show lat and long
+	fmt.Printf("in query lat: %.9f, long: %.9f\n", lat, long)
+	// Format the latitude and longitude to 9 decimal places
+	latitudeStr := fmt.Sprintf("%.9f", lat)
+	longitudeStr := fmt.Sprintf("%.9f", long)
+	// show lat and long in string
+	fmt.Printf("in query lat: %s, long: %s\n", latitudeStr, longitudeStr)
+	query.WriteString(`SELECT 
+			id, 
+			name, 
+			merchant_category, 
+			image_url, 
+			location_lat, 
+			location_long,
+			(6371000 * acos(
+				cos(radians($1)) * cos(radians(location_lat)) *
+				cos(radians(location_long) - radians($2)) +
+				sin(radians($1)) * sin(radians(location_lat))
+			)) AS distance,
+			created_at
+		FROM 
+			merchants
+		where 1=1
+	`)
 
 	if param.Name != "" {
 		query.WriteString(fmt.Sprintf("AND LOWER(name) LIKE LOWER('%s') ", fmt.Sprintf("%%%s%%", param.Name)))
@@ -144,8 +161,8 @@ func (mr *merchantRepo) GetNearbyMerchant(ctx context.Context, param dto.ParamGe
 		query.WriteString(fmt.Sprintf("AND LOWER(merchant_category) LIKE LOWER('%s') ", fmt.Sprintf("%%%s%%", param.MerchantCategory)))
 	}
 
-	// order by distance
-	query.WriteString("ORDER BY distance")
+	// order by nearest distance
+	query.WriteString("ORDER BY distance ASC")
 
 	// limit and offset
 	if param.Limit == 0 {
@@ -157,7 +174,7 @@ func (mr *merchantRepo) GetNearbyMerchant(ctx context.Context, param dto.ParamGe
 	// show query
 	fmt.Println(query.String())
 
-	rows, err := mr.conn.Query(ctx, query.String(), long, lat)
+	rows, err := mr.conn.Query(ctx, query.String(), latitudeStr, longitudeStr)
 	if err != nil {
 		return nil, err
 	}
@@ -171,6 +188,9 @@ func (mr *merchantRepo) GetNearbyMerchant(ctx context.Context, param dto.ParamGe
 		if err != nil {
 			return nil, err
 		}
+
+		// show distance in meter of each merchant
+		fmt.Printf("distance in meter: %f\n", merchant.Merchant.Distance)
 
 		// get merchant items
 		items, err := mr.GetMerchantItems(ctx, merchant.Merchant.MerchantId)

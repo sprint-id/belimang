@@ -3,13 +3,15 @@ DROP INDEX IF EXISTS idx_users_id;
 DROP INDEX IF EXISTS idx_merchants_id;
 DROP INDEX IF EXISTS idx_merchants_user_id;
 DROP INDEX IF EXISTS idx_merchants_merchant_category;
+DROP INDEX IF EXISTS idx_merchants_name
 DROP INDEX IF EXISTS idx_items_id;
 DROP INDEX IF EXISTS idx_items_user_id;
 DROP INDEX IF EXISTS idx_items_product_category;
 DROP INDEX IF EXISTS idx_estimates_id;
 DROP INDEX IF EXISTS idx_estimates_user_id;
 
-DROP EXTENSION IF EXISTS postgis CASCADE;
+-- Drop extensions
+DROP EXTENSION IF EXISTS "btree_gist";
 
 DROP TABLE IF EXISTS orders;
 
