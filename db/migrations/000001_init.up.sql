@@ -74,9 +74,8 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
 CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
-CREATE INDEX IF NOT EXISTS idx_users_id ON users (id);
+CREATE INDEX IF NOT EXISTS idx_users_is_admin ON users (is_admin);
 CREATE INDEX IF NOT EXISTS idx_merchants_id ON merchants (id);
-CREATE INDEX IF NOT EXISTS idx_merchants_user_id ON merchants (user_id);
 CREATE INDEX IF NOT EXISTS idx_merchants_merchant_category ON merchants (merchant_category);
 CREATE INDEX IF NOT EXISTS idx_merchants_name ON merchants (name);
 -- Creating an index on the merchants table for geolocation searches
@@ -85,7 +84,6 @@ CREATE INDEX IF NOT EXISTS idx_merchants_location ON merchants USING gist (
 );
 
 CREATE INDEX IF NOT EXISTS idx_items_id ON items (id);
-CREATE INDEX IF NOT EXISTS idx_items_user_id ON items (user_id);
 CREATE INDEX IF NOT EXISTS idx_items_product_category ON items (product_category);
 CREATE INDEX IF NOT EXISTS idx_estimates_id ON estimates (id);
 CREATE INDEX IF NOT EXISTS idx_estimates_user_id ON estimates (user_id);

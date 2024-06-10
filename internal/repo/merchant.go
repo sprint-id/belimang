@@ -69,6 +69,11 @@ func (mr *merchantRepo) GetMerchant(ctx context.Context, param dto.ParamGetMerch
 		query.WriteString(fmt.Sprintf("AND LOWER(name) LIKE LOWER('%s') ", fmt.Sprintf("%%%s%%", param.Name)))
 	}
 
+	// merchant category
+	if param.MerchantCategory != "" {
+		query.WriteString(fmt.Sprintf("AND LOWER(merchant_category) LIKE LOWER('%s') ", fmt.Sprintf("%%%s%%", param.MerchantCategory)))
+	}
+
 	// param createdAt sort by created time asc or desc, if value is wrong, just ignore the param
 	if param.CreatedAt == "asc" && param.Offset == 0 {
 		query.WriteString("ORDER BY created_at ASC ")
